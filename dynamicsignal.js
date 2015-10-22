@@ -50,7 +50,7 @@ module.exports = {
             throw new Exception("Ensure your token and url are set correctly!");
         }
         //Call into Dynamic Signal REST API, post assembled list of emaisl.
-        console.log("Whitelisting users");
+        //console.log("Whitelisting users");
         var data = {};
         data.emails = Array();
         for (var i=0; i< users.length; i++)
@@ -82,7 +82,7 @@ module.exports = {
                 self.processApiErrors((result.data == null) ? payload : result);
             } else {
                 //self.inviteUsers(users, callback);
-                console.log("Whitelist succesful");
+                //console.log("Whitelist succesful");
                 callback(users);
             }
         });
@@ -113,7 +113,7 @@ module.exports = {
         }
         http.request(httpConfig, function(payload){
             console.log("In callback from http request.");
-            user.password = "";
+            //user.password = "";
             if (self.debugging) {
                 console.log("*** Finished requested to insert a user. ***");
                 console.info(payload);
@@ -127,38 +127,20 @@ module.exports = {
                     if (self.debugging) {
                         console.log("*** Succesfully adjusted divisions on user: " + user.email + " ***");
                     }
-                    self.resetPassword(user.email, function(d) {
-                        if (self.debugging) {
-                            console.log("*** Succesfully reset " + user.email + "'s password. ***");
-                            console.info(d);
-                        }
-                        //Assuming we've succeeded so far...
-                        if (d.code == "success") {
-                            self.SuccesfulUpdates.push(user);
-                            //We need to reset the user's password before doing any of the below
-                            //Check to see if there are more users to be imported...
-                            if (users.length > 0) {
 
-                                self.registerUsers(users, callback);
-                            } else {
-                                //There are no more users to insert
+                    //New, non-password reset flow.
+                    self.SuccesfulUpdates.push(user);
+                    //We need to reset the user's password before doing any of the below
+                    //Check to see if there are more users to be imported...
+                    if (users.length > 0) {
 
-                                callback(self.SuccesfulUpdates, self.UnsuccesfulUpdates);
-                            }
-                        } else {
-                            user.ErrorCode = "There was a problem resetting this user's password";
-                            user.ErrorObject = d;
+                        self.registerUsers(users, callback);
+                    } else {
+                        //There are no more users to insert
 
-                            self.UnsuccesfulUpdates.push(user);
-
-                            if (users.length > 0) {
-                                self.registerUsers(users, callback);
-                            } else {
-                                callback(self.SuccesfulUpdates, self.UnsuccesfulUpdates);
-                            }
-
-                        }
-                    });
+                        callback(self.SuccesfulUpdates, self.UnsuccesfulUpdates);
+                    }
+                    //End new non-password reset flow
                 });
             } else {
                 //There was a problem inserting the user.
@@ -183,7 +165,7 @@ module.exports = {
         var self = this;
 
         this.batchWhiteListUsers(users, function(users){
-            console.log("Registering users.");
+            //console.log("Registering users.");
             self.registerUsers(users, callback);
         });
     },
