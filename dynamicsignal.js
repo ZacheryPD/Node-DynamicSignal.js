@@ -14,7 +14,8 @@ module.exports = {
         getAffiliations: "/v1/affiliations",
         getAffiliationsByUser: "/v1/manage/user/{id}/affiliations",
         resetPassword: "/v1/login/forgotpassword",
-        inviteUser: "/v1/invite"
+        inviteUser: "/v1/invite",
+        getDivisions: "/v1/divisions" 
     },
     tokens: {
         bearer: ""
@@ -299,6 +300,24 @@ module.exports = {
             success(values);
         });
 
+    },
+    getDivisions: function(success){
+        console.log('here');
+        var self = this;
+        if (!this.isReady()) {
+            throw new SetupError(this.urls, this.tokens);
+        }
+        var httpConfig = {
+            host: self.urls["base_url"],
+            relativeURL: self.urls["getDivisions"],
+            contentType: 'application/json',
+            authorization: self.tokens["bearer"],
+            method: "GET",
+        }
+
+        http.request(httpConfig, function(response){
+            success(response); 
+        });
     },
     getUserAffiliations: function(user, callback) {
         var self = this;
