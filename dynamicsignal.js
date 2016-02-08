@@ -182,7 +182,7 @@ module.exports = {
             self.registerUsers(users, callback);
         });
     },
-    adjustDivisionsOnUser: function(userId, divisions, success) {
+    adjustDivisionsOnUser: function(userId, divisions, callback) {
         if (!this.isReady()) {
             throw new Exception("Ensure your urls and tokens are set up correctly!");
         }
@@ -218,13 +218,8 @@ module.exports = {
                 console.info(response);
             }
 
-            if (response.divisions != null && response.divisions.length > 0) {
-                success();
-            }
-            else
-            {
-                console.log(userId + " was unsuccesfully updated.  Quiting.");
-            }
+            callback(response);
+
         });
 
     },
@@ -391,8 +386,7 @@ module.exports = {
                 });
             }
         }
-    }
-
+    },
     adjustUser: function(user, callback){
         var self=this;
         if (!this.isReady()) {
@@ -401,11 +395,11 @@ module.exports = {
 
         var httpConfig = {
             host: self.urls["base_url"],
-            relativeURL: self.urls["user"] + userId,
+            relativeURL: self.urls["user"] + user.id,
             contentType: 'application/json',
             authorization: self.tokens["bearer"],
             method: "PUT",
-            data: JSON.parse(str)
+            data: user
         }
         http.request(httpConfig, function(response){
             if(self.debugging){
