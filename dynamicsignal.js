@@ -1,4 +1,17 @@
 //var curling = require('curling');
+
+/**
+ * @author Zachery DeLong https://github.com/ZacheryPD
+ * @version 1.1.0
+ * 
+ * overview:
+ *   This is a module designed to make administering a Dynamic Signal instance
+ *   easier by offering local JS based bindings for the API documented at
+ *   dev.voicestorm.com
+ *
+ * Method breakdown
+ * => todo
+*/
 var http = require('./HTTPRequest.js');
 module.exports = {
     debugging: false,
@@ -380,6 +393,28 @@ module.exports = {
         }
     }
 
+    adjustUser: function(user, callback){
+        var self=this;
+        if (!this.isReady()) {
+            throw new Exception("Ensure your token and url are set correctly!");
+        }
+
+        var httpConfig = {
+            host: self.urls["base_url"],
+            relativeURL: self.urls["user"] + userId,
+            contentType: 'application/json',
+            authorization: self.tokens["bearer"],
+            method: "PUT",
+            data: JSON.parse(str)
+        }
+        http.request(httpConfig, function(response){
+            if(self.debugging){
+                console.log( 'The response from adjustUser' );
+                console.info( response );
+            }
+            callback(response);
+        });
+    }
 }
 
 function SetupError(urls, tokens) {
