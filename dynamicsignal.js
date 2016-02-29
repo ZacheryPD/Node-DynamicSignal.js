@@ -124,14 +124,23 @@ module.exports = {
             if ("user" in payload) {
                 user.id = payload.user.id;
 
-                self.adjustDivisionsOnUser(payload.user.id, user.divisions, function() {
+                self.adjustDivisionsOnUser(payload.user.id, user.divisions, function(data) {
                     if (self.debugging) {
                         console.log("*** Succesfully adjusted divisions on user: " + user.email + " ***");
                     }
 
-                    //New, non-password reset flow.
-                    self.SuccesfulUpdates.push(user);
-                    //We need to reset the user's password before doing any of the below
+                    /*
+                     * If there were no errors returned (in messages field)
+                     * then add the user to the corresponding list
+                    */
+                    if(!data.hasOwnProperty('messages')){
+                        //New, non-password reset flow.
+                        self.SuccesfulUpdates.push(user);
+                    }
+                    else{
+                        self.UnsuccesfulUpdates.push(user);
+                    }
+
                     //Check to see if there are more users to be imported...
                     if (users.length > 0) {
 
