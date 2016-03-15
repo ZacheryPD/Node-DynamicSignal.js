@@ -113,7 +113,7 @@ module.exports = {
             data: user
         }
         http.request(httpConfig, function(payload){
-            console.log("In callback from http request.");
+            //console.log("In callback from http request.");
             //user.password = "";
             if (self.debugging) {
                 console.log("*** Finished requested to insert a user. ***");
@@ -405,6 +405,10 @@ module.exports = {
                     callback(users);
                 });
             }
+        }
+        else
+        {
+            throw new Exception('The list of users passed into the whitelist method needs to be formatted as an array');
         }
     }
 
