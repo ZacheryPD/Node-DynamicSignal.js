@@ -1,4 +1,17 @@
 //var curling = require('curling');
+
+/**
+ * @author Zachery DeLong https://github.com/ZacheryPD
+ * @version 1.1.0
+ * 
+ * overview:
+ *   This is a module designed to make administering a Dynamic Signal instance
+ *   easier by offering local JS based bindings for the API documented at
+ *   dev.voicestorm.com
+ *
+ * Method breakdown
+ * => todo
+*/
 var http = require('./HTTPRequest.js');
 module.exports = {
     debugging: false,
@@ -179,7 +192,7 @@ module.exports = {
             self.registerUsers(users, callback);
         });
     },
-    adjustDivisionsOnUser: function(userId, divisions, success) {
+    adjustDivisionsOnUser: function(userId, divisions, callback) {
         if (!this.isReady()) {
             throw new Exception("Ensure your urls and tokens are set up correctly!");
         }
@@ -215,13 +228,8 @@ module.exports = {
                 console.info(response);
             }
 
-            if (response.divisions != null && response.divisions.length > 0) {
-                success();
-            }
-            else
-            {
-                console.log(userId + " was unsuccesfully updated.  Quiting.");
-            }
+            callback(response);
+
         });
 
     },
@@ -406,12 +414,29 @@ module.exports = {
                 });
             }
         }
-        else
-        {
-            throw new Exception('The list of users passed into the whitelist method needs to be formatted as an array');
+    },
+    adjustUser: function(user, callback){
+        var self=this;
+        if (!this.isReady()) {
+            throw new Exception("Ensure your token and url are set correctly!");
         }
-    }
 
+        var httpConfig = {
+            host: self.urls["base_url"],
+            relativeURL: self.urls["user"] + user.id,
+            contentType: 'application/json',
+            authorization: self.tokens["bearer"],
+            method: "PUT",
+            data: user
+        }
+        http.request(httpConfig, function(response){
+            if(self.debugging){
+                console.log( 'The response from adjustUser' );
+                console.info( response );
+            }
+            callback(response);
+        });
+    }
 }
 
 function SetupError(urls, tokens) {
